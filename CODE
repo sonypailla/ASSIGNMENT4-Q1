@@ -1,55 +1,26 @@
+import re
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 import nltk
 
-from nltk.tokenize import TreebankWordTokenizer
+# Download only stopwords (minimal and sufficient)
+nltk.download('stopwords')
 
-from nltk.corpus import stopwords
+def preprocess_nlp(sentence):
+    # 1. Tokenize using regular expressions (avoids punkt issues)
+    tokens = re.findall(r'\b\w+\b', sentence)
+    print("Original Tokens:", tokens)
 
-from nltk.stem import PorterStemmer
+    # 2. Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
+    print("Tokens Without Stopwords:", filtered_tokens)
 
+    # 3. Apply stemming
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(word) for word in filtered_tokens]
+    print("Stemmed Words:", stemmed_tokens)
 
-# Force download necessary resources
-
-nltk.download('stopwords', force=True)
-
-
-def nlp_preprocessing_pipeline(sentence):
-
-tokenizer = TreebankWordTokenizer()
-
-
-# Step 1: Tokenization (no 'punkt' needed)
-
-tokens = tokenizer.tokenize(sentence)
-
-print("Original Tokens:")
-
-print(tokens)
-
-
-# Step 2: Stopword Removal
-
-stop_words = set(stopwords.words('english'))
-
-filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
-
-print("\nTokens Without Stopwords:")
-
-print(filtered_tokens)
-
-
-# Step 3: Stemming
-
-stemmer = PorterStemmer()
-
-stemmed_words = [stemmer.stem(word) for word in filtered_tokens]
-
-print("\nStemmed Words:")
-
-print(stemmed_words)
-
-
-# Example sentence
-
+# Run it
 sentence = "NLP techniques are used in virtual assistants like Alexa and Siri."
-
-nlp_preprocessing_pipeline(sentence)
+preprocess_nlp(sentence)
